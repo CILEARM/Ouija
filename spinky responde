@@ -1,0 +1,138 @@
+Public Class Form1
+    Dim peticion() As String = {"S", "p", "i", "n", "k", "y", " ", "p", "o", "r", " ", "f", "a", "v", "o", "r", " ", "r", "e", "s", "p", "o", "n", "d", "e", " ", "e", "s", "t", "a", " ", "p", "r", "e", "g", "u", "n", "t", "a"}
+
+    Dim tamaño As Integer = UBound(peticion) + 1
+    Dim borrar As Boolean = False
+    Dim texto As String = ""
+    Dim truco As Boolean = False
+
+    Dim RespuestasAlternas() As String = {"Tu ansiedad por probarme te hace escribir cualquier cosa, así nunca te responderé.", "La pregunta que has realizado no es válida.", "Por el momento no responderé.", "Sigue intentando.", "El tiempo todo lo responde."}
+
+    Dim texto2 As String = ""
+    Dim res As String = ""
+    Dim final As Boolean = False
+
+    Private Sub TextBox1_KeyPress(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles TextBox1.KeyPress
+
+        Dim agregado As String
+        agregado = e.KeyChar
+
+        If TextBox1.Text = Nothing Then
+            borrar = False
+            texto = ""
+            truco = False
+            texto2 = ""
+            res = ""
+            final = False
+        End If
+
+        If Not (Char.IsControl(e.KeyChar)) Then
+            borrar = False
+        Else
+            If truco = True Then
+                If Len(res) > 1 Then
+                    res = Microsoft.VisualBasic.Left(res, Len(res) - 1)
+                Else
+                    res = ""
+                End If
+            End If
+        End If
+
+        If truco = True And borrar = False Then
+            res += agregado
+        End If
+
+        texto = CStr(TextBox1.Text)
+
+        If truco = True And agregado = "." Then
+            truco = False
+            final = True
+        ElseIf truco = False And agregado = "." Then
+            truco = True
+        End If
+
+        agregado = ""
+
+        If e.KeyChar = Chr(13) Then
+            TxtPregunta.Focus()
+        End If
+
+    End Sub
+
+    Private Sub TextBox1_TextChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles TextBox1.TextChanged
+
+        If borrar = False Then
+            If truco = True Or final = True Then
+                texto2 = Microsoft.VisualBasic.Left(texto, Len(texto))
+                TextBox1.Text = texto2 & peticion(Len(texto2))
+                final = False
+                TextBox1.SelectionStart = Len(TextBox1.Text)
+            End If
+            borrar = True
+        End If
+
+    End Sub
+
+    Private Sub BtnOk_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BtnOk.Click
+
+        If TxtPregunta.Text = "" Then
+            MessageBox.Show("¿A quien quieres engañar? ¡Vamos, Preguntame algo!")
+        Else
+
+            If TextBox1.Text.ToUpper = "SPINKY POR FAVOR RESPONDE ESTA PREGUNTA" Or TextBox1.Text.ToUpper = "SPINKY POR FAVOR RESPONDE" Then
+                Label4.Visible = True
+                If res = "" Then
+                    Dim value As Integer = CInt(Int((UBound(RespuestasAlternas) * Rnd()) + 1))
+                    lblres.Text = RespuestasAlternas(value).ToUpper
+                Else
+                    lblres.Text = Microsoft.VisualBasic.Left(res, Len(res) - 1).ToUpper
+                End If
+            Else
+                lblres.Text = "Pregunta o Peticion no Valida"
+                Exit Sub
+            End If
+        End If
+        lblres.Visible = True
+
+
+    End Sub
+    Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+
+        TextBox1.MaxLength = tamaño
+
+    End Sub
+
+    Private Sub TxtPregunta_Enter(ByVal sender As Object, ByVal e As System.EventArgs) Handles TxtPregunta.Enter
+      
+            If TextBox1.Text <> Nothing Then
+                TextBox1.ReadOnly = True
+            End If
+    End Sub
+
+    Private Sub TxtPregunta_KeyPress(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles TxtPregunta.KeyPress
+        
+        If e.KeyChar = Chr(13) Or e.KeyChar = "?" Then
+            BtnOk.PerformClick()
+        End If
+    End Sub
+
+
+
+    Private Sub BtnNuevo_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles BtnNuevo.Click
+
+        lblres.Text = Nothing
+        TextBox1.ReadOnly = False
+        TextBox1.Text = Nothing
+        TxtPregunta.Text = Nothing
+        borrar = False
+        texto = ""
+        truco = False
+        texto2 = ""
+        res = ""
+        final = False
+        Label4.Visible = False
+
+
+    End Sub
+
+End Class
